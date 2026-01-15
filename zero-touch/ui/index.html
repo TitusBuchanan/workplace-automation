@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Zero Touch Provisioning</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2rem; background: #f6f8fb; }
+      header { margin-bottom: 1.5rem; }
+      .card { background: #fff; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+      code { background: #eef2f7; padding: 0.25rem 0.5rem; border-radius: 4px; }
+      pre { background: #0d1117; color: #e6edf3; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Zero Touch Provisioning</h1>
+      <p>Self-hosted automation for mixed fleet devices.</p>
+    </header>
+
+    <div class="card">
+      <h2>API Endpoints</h2>
+      <ul>
+        <li><code>POST /enrollment/tokens</code> — create enrollment token (requires X-API-Key)</li>
+        <li><code>POST /enrollment/register</code> — agent registers using token</li>
+        <li><code>POST /blueprints</code> — create blueprint</li>
+        <li><code>POST /workflows/devices/{id}</code> — apply blueprint to device</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Agent Bootstrap (Linux/macOS)</h2>
+      <pre>curl -s https://api.localhost/enroll?token=YOUR_TOKEN -o bootstrap.sh
+chmod +x bootstrap.sh
+./bootstrap.sh</pre>
+    </div>
+
+    <div class="card">
+      <h2>Agent Bootstrap (Windows)</h2>
+      <pre>iwr -useb https://api.localhost/enroll?token=YOUR_TOKEN -OutFile bootstrap.ps1
+powershell.exe -ExecutionPolicy Bypass -File .\\bootstrap.ps1</pre>
+    </div>
+  </body>
+</html>
