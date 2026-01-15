@@ -1,0 +1,13 @@
+{
+  "name": "deployment-scheduler",
+  "version": "1.0.0",
+  "description": "Simple Express-based deployment scheduler demo with mock execution.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "sqlite3": "^5.1.7"
+  }
+}

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deployment Scheduler Demo</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 24px;
+        background: #f7f9fc;
+        color: #1f2933;
+      }
+      h1,
+      h2 {
+        margin-bottom: 8px;
+      }
+      .card {
+        background: #fff;
+        border: 1px solid #d7e2eb;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: bold;
+      }
+      input,
+      select,
+      textarea,
+      button {
+        font: inherit;
+      }
+      input,
+      select,
+      textarea {
+        padding: 8px;
+        border: 1px solid #cdd7e1;
+        border-radius: 6px;
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 12px;
+      }
+      button {
+        padding: 8px 12px;
+        border: none;
+        border-radius: 6px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: #6b7280;
+      }
+      button:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .status {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 12px;
+        text-transform: capitalize;
+      }
+      .status.pending {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .status.executed {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .status.cancelled {
+        background: #f3f4f6;
+        color: #4b5563;
+      }
+      #error {
+        color: #b91c1c;
+        margin-bottom: 12px;
+      }
+      .actions button {
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Deployment Scheduler</h1>
+    <p>Schedule mock deployments, trigger them manually, and review execution logs.</p>
+
+    <div class="card">
+      <h2>Create Schedule</h2>
+      <div id="error"></div>
+      <label for="service">Service</label>
+      <select id="service"></select>
+
+      <label for="environment">Environment</label>
+      <select id="environment"></select>
+
+      <label for="when">When</label>
+      <input type="datetime-local" id="when" />
+
+      <label for="note">Note (optional)</label>
+      <textarea id="note" rows="2" placeholder="Context for this deployment"></textarea>
+
+      <button id="create">Create Schedule</button>
+    </div>
+
+    <div class="card">
+      <h2>Upcoming & Recent Schedules</h2>
+      <table id="schedule-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Service</th>
+            <th>Environment</th>
+            <th>When</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Execution Log</h2>
+      <table id="log-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Service</th>
+            <th>Environment</th>
+            <th>Message</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <script>
+      const serviceSelect = document.getElementById('service');
+      const environmentSelect = document.getElementById('environment');
+      const whenInput = document.getElementById('when');
+      const noteInput = document.getElementById('note');
+      const errorBox = document.getElementById('error');
+
+      async function loadSelects() {
+        const [services, environments] = await Promise.all([
+          fetch('/api/services').then((r) => r.json()),
+          fetch('/api/environments').then((r) => r.json()),
+        ]);
+
+        serviceSelect.innerHTML = services.map((s) => `<option value="${s.id}">${s.name}</option>`).join('');
+        environmentSelect.innerHTML = environments
+          .map((e) => `<option value="${e.id}">${e.name}</option>`)
+          .join('');
+      }
+
+      function formatDate(iso) {
+        const date = new Date(iso);
+        return isNaN(date) ? iso : date.toLocaleString();
+      }
+
+      async function loadSchedules() {
+        const tbody = document.querySelector('#schedule-table tbody');
+        const schedules = await fetch('/api/schedules').then((r) => r.json());
+        tbody.innerHTML = schedules
+          .map(
+            (s) => `
+          <tr>
+            <td>${s.id}</td>
+            <td>${s.service_name}</td>
+            <td>${s.environment_name}</td>
+            <td>${formatDate(s.scheduled_for)}</td>
+            <td><span class="status ${s.status}">${s.status}</span></td>
+            <td class="actions">
+              <button onclick="runSchedule(${s.id})" ${s.status !== 'pending' ? 'disabled' : ''}>Run now</button>
+              <button class="secondary" onclick="cancelSchedule(${s.id})" ${
+                s.status !== 'pending' ? 'disabled' : ''
+              }>Cancel</button>
+            </td>
+          </tr>
+        `,
+          )
+          .join('');
+      }
+
+      async function loadLogs() {
+        const tbody = document.querySelector('#log-table tbody');
+        const logs = await fetch('/api/logs').then((r) => r.json());
+        tbody.innerHTML = logs
+          .map(
+            (l) => `
+          <tr>
+            <td>${formatDate(l.executed_at)}</td>
+            <td>${l.service_name}</td>
+            <td>${l.environment_name}</td>
+            <td>${l.message}</td>
+          </tr>
+        `,
+          )
+          .join('');
+      }
+
+      async function createSchedule() {
+        errorBox.textContent = '';
+        const payload = {
+          serviceId: Number(serviceSelect.value),
+          environmentId: Number(environmentSelect.value),
+          scheduledFor: whenInput.value,
+          note: noteInput.value,
+        };
+        if (!payload.scheduledFor) {
+          errorBox.textContent = 'Please choose a time.';
+          return;
+        }
+        const response = await fetch('/api/schedules', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          const body = await response.json();
+          errorBox.textContent = body.error || 'Unable to create schedule.';
+          return;
+        }
+        whenInput.value = '';
+        noteInput.value = '';
+        await refresh();
+      }
+
+      async function cancelSchedule(id) {
+        await fetch(`/api/schedules/${id}/cancel`, { method: 'POST' });
+        await refresh();
+      }
+
+      async function runSchedule(id) {
+        await fetch(`/api/schedules/${id}/run`, { method: 'POST' });
+        await refresh();
+      }
+
+      async function refresh() {
+        await Promise.all([loadSchedules(), loadLogs()]);
+      }
+
+      document.getElementById('create').addEventListener('click', createSchedule);
+
+      loadSelects().then(refresh);
+    </script>
+  </body>
+</html>
