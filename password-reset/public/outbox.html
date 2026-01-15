@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo Outbox - Password Reset Portal</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #121a31;
+        --text: #e9eefc;
+        --muted: #a8b3d6;
+        --accent: #6ea8fe;
+        --border: rgba(255, 255, 255, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        background: radial-gradient(1200px 800px at 20% 10%, rgba(110, 168, 254, 0.18), transparent 55%),
+          radial-gradient(900px 700px at 80% 30%, rgba(94, 234, 212, 0.12), transparent 55%), var(--bg);
+        color: var(--text);
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .container {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 28px 16px 64px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 18px;
+      }
+      p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .card {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: rgba(18, 26, 49, 0.82);
+        backdrop-filter: blur(6px);
+        padding: 18px;
+      }
+      .row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      button {
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        cursor: pointer;
+        font-weight: 600;
+      }
+      button:hover {
+        border-color: rgba(110, 168, 254, 0.45);
+      }
+      .emails {
+        display: grid;
+        gap: 12px;
+      }
+      .email {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 14px;
+      }
+      .meta {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px 14px;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .meta b {
+        color: #dbe7ff;
+        font-weight: 700;
+      }
+      pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        margin: 0;
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.2);
+        color: #dbe7ff;
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .small {
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div>
+          <h1>Demo Outbox</h1>
+          <p>In demo mode, reset “emails” are stored here so you can click the reset link locally.</p>
+        </div>
+        <nav>
+          <a href="/">Back</a>
+        </nav>
+      </header>
+
+      <section class="card">
+        <div class="row">
+          <div class="small">Showing the 25 most recent messages.</div>
+          <button id="refreshBtn" type="button">Refresh</button>
+        </div>
+        <div id="emails" class="emails"></div>
+        <div id="empty" class="small" style="display: none">No messages yet. Request a reset from the home page.</div>
+      </section>
+    </div>
+
+    <script>
+      const emailsEl = document.getElementById('emails');
+      const emptyEl = document.getElementById('empty');
+      const refreshBtn = document.getElementById('refreshBtn');
+
+      function escapeHtml(text) {
+        return String(text)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      async function loadOutbox() {
+        emailsEl.innerHTML = '';
+        emptyEl.style.display = 'none';
+        refreshBtn.disabled = true;
+        try {
+          const resp = await fetch('/api/outbox');
+          const emails = await resp.json();
+          if (!Array.isArray(emails) || emails.length === 0) {
+            emptyEl.style.display = 'block';
+            return;
+          }
+
+          for (const e of emails) {
+            const div = document.createElement('div');
+            div.className = 'email';
+
+            div.innerHTML = `
+              <div class="meta">
+                <div><b>To</b>: ${escapeHtml(e.to_address)}</div>
+                <div><b>Created</b>: ${escapeHtml(e.created_at)}</div>
+                <div style="grid-column: 1 / -1"><b>Subject</b>: ${escapeHtml(e.subject)}</div>
+              </div>
+              <pre>${escapeHtml(e.body)}</pre>
+            `;
+
+            const linkMatch = String(e.body).match(/https?:\/\/\\S+/);
+            if (linkMatch) {
+              const link = linkMatch[0].trim();
+              const a = document.createElement('a');
+              a.href = link;
+              a.textContent = 'Open reset link';
+              a.style.display = 'inline-block';
+              a.style.marginTop = '10px';
+              div.appendChild(a);
+            }
+
+            emailsEl.appendChild(div);
+          }
+        } catch (err) {
+          emptyEl.style.display = 'block';
+          emptyEl.textContent = 'Failed to load outbox.';
+        } finally {
+          refreshBtn.disabled = false;
+        }
+      }
+
+      refreshBtn.addEventListener('click', loadOutbox);
+      loadOutbox();
+    </script>
+  </body>
+</html>
+

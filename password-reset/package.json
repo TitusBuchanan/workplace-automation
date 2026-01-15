@@ -1,0 +1,17 @@
+{
+  "name": "password-reset-portal",
+  "version": "1.0.0",
+  "description": "Self-service password reset portal demo (Express + SQLite).",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^7.2.0",
+    "nodemailer": "^6.10.0",
+    "sqlite3": "^5.1.7"
+  }
+}

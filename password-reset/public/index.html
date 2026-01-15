@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Password Reset Portal (Demo)</title>
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #121a31;
+        --text: #e9eefc;
+        --muted: #a8b3d6;
+        --accent: #6ea8fe;
+        --danger: #ff6b6b;
+        --ok: #5eead4;
+        --border: rgba(255, 255, 255, 0.08);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+          "Segoe UI Emoji";
+        background: radial-gradient(1200px 800px at 20% 10%, rgba(110, 168, 254, 0.18), transparent 55%),
+          radial-gradient(900px 700px at 80% 30%, rgba(94, 234, 212, 0.12), transparent 55%), var(--bg);
+        color: var(--text);
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .container {
+        max-width: 920px;
+        margin: 0 auto;
+        padding: 28px 16px 64px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 18px;
+      }
+      .brand {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .brand h1 {
+        font-size: 18px;
+        margin: 0;
+        letter-spacing: 0.2px;
+      }
+      .brand p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .nav {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+      }
+      .pill {
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        padding: 8px 10px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        font-size: 13px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 14px;
+      }
+      .col {
+        display: grid;
+        gap: 14px;
+      }
+      @media (max-width: 880px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .card {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: rgba(18, 26, 49, 0.82);
+        backdrop-filter: blur(6px);
+        padding: 18px;
+      }
+      .card h2 {
+        margin: 0 0 8px;
+        font-size: 16px;
+      }
+      .card p {
+        margin: 0 0 14px;
+        color: var(--muted);
+        line-height: 1.5;
+        font-size: 13px;
+      }
+      label {
+        display: block;
+        font-size: 13px;
+        color: var(--muted);
+        margin-bottom: 6px;
+      }
+      input {
+        width: 100%;
+        padding: 12px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--text);
+        outline: none;
+      }
+      input:focus {
+        border-color: rgba(110, 168, 254, 0.55);
+      }
+      button {
+        margin-top: 12px;
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(90deg, rgba(110, 168, 254, 1), rgba(94, 234, 212, 1));
+        color: #081026;
+        font-weight: 700;
+        cursor: pointer;
+      }
+      button:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+      }
+      .msg {
+        margin-top: 12px;
+        border-radius: 10px;
+        padding: 10px 12px;
+        font-size: 13px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--muted);
+      }
+      .msg.ok {
+        border-color: rgba(94, 234, 212, 0.35);
+      }
+      .msg.err {
+        border-color: rgba(255, 107, 107, 0.35);
+        color: #ffd1d1;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 12px;
+        color: #dbe7ff;
+      }
+      .small {
+        font-size: 12px;
+        color: var(--muted);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <div class="brand">
+          <h1>Password Reset Portal</h1>
+          <p>Portfolio demo: secure-ish reset flow (token hashing, expiry, one-time use, rate limits, audit trail).</p>
+        </div>
+        <nav class="nav">
+          <a class="pill" href="/outbox.html">Demo Outbox</a>
+          <a class="pill" href="/reset.html">Have a token?</a>
+        </nav>
+      </header>
+
+      <div class="grid">
+        <div class="col">
+          <section class="card">
+            <h2>Reset your password</h2>
+            <p>
+              Enter your email. You’ll always get the same response, even if the account doesn’t exist (prevents user
+              enumeration). In demo mode, we can auto-provision your email so you can receive a real reset message.
+            </p>
+
+            <form id="requestForm">
+              <label for="identifier">Email</label>
+              <input id="identifier" name="identifier" type="email" placeholder="you@example.com" required />
+              <button id="requestBtn" type="submit">Send reset link</button>
+            </form>
+
+            <div id="requestMsg" class="msg" style="display: none"></div>
+            <p class="small" style="margin-top: 10px">
+              Tip: if SMTP is configured below, the app will send a real email to this address. Otherwise, check the
+              <a href="/outbox.html">Demo Outbox</a>.
+            </p>
+          </section>
+
+          <section class="card">
+            <h2>SMTP settings (optional)</h2>
+            <p>Configure SMTP here to send a real reset email directly from this UI.</p>
+
+            <form id="smtpForm">
+              <label>
+                <input id="smtpEnabled" type="checkbox" />
+                Enable SMTP sending
+              </label>
+
+              <div style="display: grid; gap: 10px; margin-top: 10px">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+                  <div>
+                    <label for="smtpHost">SMTP host</label>
+                    <input id="smtpHost" type="text" placeholder="smtp.gmail.com" />
+                  </div>
+                  <div>
+                    <label for="smtpPort">SMTP port</label>
+                    <input id="smtpPort" type="number" placeholder="587" />
+                  </div>
+                </div>
+
+                <label>
+                  <input id="smtpSecure" type="checkbox" />
+                  Use TLS/SSL (usually true for port 465)
+                </label>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+                  <div>
+                    <label for="smtpUser">SMTP user (optional)</label>
+                    <input id="smtpUser" type="text" placeholder="your@gmail.com" autocomplete="username" />
+                  </div>
+                  <div>
+                    <label for="smtpPass">SMTP password</label>
+                    <input id="smtpPass" type="password" placeholder="app password / smtp password" autocomplete="current-password" />
+                  </div>
+                </div>
+
+                <div>
+                  <label for="fromAddress">From address</label>
+                  <input id="fromAddress" type="text" placeholder="Password Reset Demo <no-reply@yourdomain>" />
+                </div>
+              </div>
+
+              <button id="smtpBtn" type="submit">Save SMTP settings</button>
+            </form>
+
+            <div id="smtpMsg" class="msg" style="display: none"></div>
+            <p class="small" style="margin-top: 10px">
+              For Gmail you’ll need an <b>App Password</b>. You can also verify send status via <code>/api/audit</code>.
+            </p>
+          </section>
+        </div>
+
+        <aside class="card">
+          <h2>What you can demo</h2>
+          <p>
+            This mini-app focuses on a realistic reset flow, without real email delivery or real identity provider
+            integration.
+          </p>
+          <ul class="small" style="margin: 0; padding-left: 18px; line-height: 1.6">
+            <li>Reset tokens stored as hashes (DB doesn’t contain raw tokens)</li>
+            <li>Reset link expiry + one-time use</li>
+            <li>Rate limiting by IP and by identifier</li>
+            <li>Audit log of reset attempts</li>
+            <li>Demo Outbox page to retrieve “emails” locally</li>
+          </ul>
+          <div class="msg" style="margin-top: 14px">
+            Tip: after requesting a reset, open the <a href="/outbox.html">Demo Outbox</a> and click the reset link.
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script>
+      const form = document.getElementById('requestForm');
+      const btn = document.getElementById('requestBtn');
+      const msg = document.getElementById('requestMsg');
+
+      const smtpForm = document.getElementById('smtpForm');
+      const smtpBtn = document.getElementById('smtpBtn');
+      const smtpMsg = document.getElementById('smtpMsg');
+      const smtpEnabled = document.getElementById('smtpEnabled');
+      const smtpHost = document.getElementById('smtpHost');
+      const smtpPort = document.getElementById('smtpPort');
+      const smtpSecure = document.getElementById('smtpSecure');
+      const smtpUser = document.getElementById('smtpUser');
+      const smtpPass = document.getElementById('smtpPass');
+      const fromAddress = document.getElementById('fromAddress');
+
+      function showMessage(text, kind) {
+        msg.style.display = 'block';
+        msg.textContent = text;
+        msg.className = `msg ${kind || ''}`;
+      }
+
+      function showSmtpMessage(text, kind) {
+        smtpMsg.style.display = 'block';
+        smtpMsg.textContent = text;
+        smtpMsg.className = `msg ${kind || ''}`;
+      }
+
+      const SMTP_STORAGE_KEY = 'password-reset-demo:smtp';
+      function loadSmtpFromStorage() {
+        try {
+          return JSON.parse(localStorage.getItem(SMTP_STORAGE_KEY) || '{}') || {};
+        } catch {
+          return {};
+        }
+      }
+      function saveSmtpToStorage(cfg) {
+        localStorage.setItem(SMTP_STORAGE_KEY, JSON.stringify(cfg));
+      }
+
+      async function loadServerConfig() {
+        try {
+          const resp = await fetch('/api/config');
+          const cfg = await resp.json();
+          if (cfg && cfg.smtp) return cfg;
+        } catch {}
+        return null;
+      }
+
+      async function initSmtpForm() {
+        const serverCfg = await loadServerConfig();
+        const stored = loadSmtpFromStorage();
+        const cfg = serverCfg?.smtp || stored;
+
+        smtpEnabled.checked = !!cfg.enabled;
+        smtpHost.value = cfg.host || '';
+        smtpPort.value = String(cfg.port || 587);
+        smtpSecure.checked = !!cfg.secure;
+        smtpUser.value = cfg.user || '';
+        fromAddress.value = cfg.fromAddress || '';
+
+        if (serverCfg?.smtp?.configured) {
+          showSmtpMessage('SMTP is configured on the server. You can update it here.', 'ok');
+        }
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        btn.disabled = true;
+        msg.style.display = 'none';
+
+        const identifier = document.getElementById('identifier').value;
+        try {
+          const resp = await fetch('/api/reset/request', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ identifier }),
+          });
+          const data = await resp.json().catch(() => ({}));
+          showMessage(data.message || 'If an account exists, a password reset link has been sent.', 'ok');
+        } catch (err) {
+          showMessage('Request failed. Please try again.', 'err');
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      smtpForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        smtpBtn.disabled = true;
+        smtpMsg.style.display = 'none';
+
+        const cfg = {
+          enabled: smtpEnabled.checked,
+          host: smtpHost.value.trim(),
+          port: Number(smtpPort.value || 587),
+          secure: smtpSecure.checked,
+          user: smtpUser.value.trim(),
+          pass: smtpPass.value,
+          fromAddress: fromAddress.value.trim(),
+        };
+
+        saveSmtpToStorage({ ...cfg, pass: '' }); // don't keep secrets in localStorage
+
+        try {
+          const resp = await fetch('/api/config/smtp', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(cfg),
+          });
+          const data = await resp.json().catch(() => ({}));
+          if (!resp.ok) {
+            showSmtpMessage(data.error || 'Failed to save SMTP settings.', 'err');
+            return;
+          }
+          if (cfg.enabled && data.verified === false && data.verifyError) {
+            showSmtpMessage(`Saved, but SMTP verify failed: ${data.verifyError}`, 'err');
+          } else if (cfg.enabled) {
+            showSmtpMessage('SMTP settings saved and verified.', 'ok');
+          } else {
+            showSmtpMessage('SMTP disabled.', 'ok');
+          }
+          smtpPass.value = '';
+        } catch (err) {
+          showSmtpMessage('Failed to save SMTP settings.', 'err');
+        } finally {
+          smtpBtn.disabled = false;
+        }
+      });
+
+      initSmtpForm();
+    </script>
+  </body>
+</html>
+

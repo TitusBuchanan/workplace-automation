@@ -1,0 +1,30 @@
+0 verbose cli /opt/homebrew/Cellar/node/24.7.0/bin/node /opt/homebrew/bin/npm
+1 info using npm@11.5.1
+2 info using node@v24.7.0
+3 silly config load:file:/opt/homebrew/lib/node_modules/npm/npmrc
+4 silly config load:file:/Users/titusbuchananjr./workplace-automation/password-reset/.npmrc
+5 silly config load:file:/Users/titusbuchananjr./.npmrc
+6 silly config load:file:/opt/homebrew/etc/npmrc
+7 verbose title npm install
+8 verbose argv "install" "--cache" "./.npm-cache" "--no-audit" "--no-fund"
+9 verbose logfile logs-max:10 dir:/Users/titusbuchananjr./workplace-automation/password-reset/.npm-cache/_logs/2026-01-15T23_21_18_457Z-
+10 verbose logfile /Users/titusbuchananjr./workplace-automation/password-reset/.npm-cache/_logs/2026-01-15T23_21_18_457Z-debug-0.log
+11 silly logfile done cleaning log files
+12 silly packumentCache heap:4496293888 maxSize:1124073472 maxEntrySize:562036736
+13 silly idealTree buildDeps
+14 silly fetch manifest nodemailer@^6.10.0
+15 silly packumentCache full:https://registry.npmjs.org/nodemailer cache-miss
+16 http fetch GET 200 https://registry.npmjs.org/nodemailer 224ms (cache miss)
+17 silly packumentCache full:https://registry.npmjs.org/nodemailer set size:undefined disposed:false
+18 silly placeDep ROOT nodemailer@6.10.1 OK for: password-reset-portal@1.0.0 want: ^6.10.0
+19 silly reify moves {}
+20 http cache nodemailer@https://registry.npmjs.org/nodemailer/-/nodemailer-6.10.1.tgz 0ms (cache hit)
+21 silly tarball no local data for nodemailer@https://registry.npmjs.org/nodemailer/-/nodemailer-6.10.1.tgz. Extracting by manifest.
+22 http fetch GET 200 https://registry.npmjs.org/nodemailer/-/nodemailer-6.10.1.tgz 48ms (cache miss)
+23 silly ADD node_modules/nodemailer
+24 verbose cwd /Users/titusbuchananjr./workplace-automation/password-reset
+25 verbose os Darwin 25.2.0
+26 verbose node v24.7.0
+27 verbose npm  v11.5.1
+28 verbose exit 0
+29 info ok
