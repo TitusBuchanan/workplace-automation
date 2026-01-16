@@ -1,0 +1,2 @@
+{"timestamp":"2026-01-15T19:25:18.4041830-05:00","level":"INFO","message":"Calculated endpoint experience score.","data":{"Score":85,"Reasons":["System drive free space below 15%.","Memory utilization is elevated (>=70%)."],"HealthState":"Healthy"}}
+{"timestamp":"2026-01-15T19:26:52.9351530-05:00","level":"INFO","message":"Calculated endpoint experience score.","data":{"Reasons":["System drive free space below 15%.","Memory utilization is elevated (>=70%)."],"HealthState":"Healthy","Score":85}}
