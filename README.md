@@ -82,3 +82,48 @@ See the `password-reset/README.md` for complete docs, usage, and optional setup.
 ---
 
 
+
+---
+
+### Endpoint Experience Monitoring & Self-Healing (Intune)
+
+**Endpoint Experience Monitoring & Self-Healing** is a PowerShell solution for monitoring endpoint health and running basic self-healing actions, built for deployment via Microsoft Intune Proactive Remediations.
+
+Key features:
+- Collects performance and app health signals (boot time, resource usage, Windows Update, Teams health, etc.)
+- Calculates a Digital Experience Score (0–100) and health state (Healthy/Warning/Critical)
+- When in Critical state, can automatically:
+  - Restart Teams
+  - Sync Intune policy
+  - Clear safe Teams cache and temp files
+- Writes structured logs for audit and troubleshooting
+
+**Designed for** Intune Proactive Remediations (SYSTEM context, non-interactive).
+
+- Scripts and log locations:
+  - PowerShell scripts: `endpoint-experience-monitoring/scripts/`
+  - Example deployment and folder structure detailed in the project [README](endpoint-experience-monitoring/README.md)
+
+See `endpoint-experience-monitoring/README.md` for setup, script descriptions, and Intune deployment guidance.
+
+---
+
+### Access & License Audit (Offline JSON, Python)
+
+**Access & License Audit** is a Python 3 command-line tool for auditing Microsoft 365 or Entra ID users and license assignments from offline JSON exports. No cloud authentication required.
+
+Key features:
+- Loads users from a local Microsoft export (`sample_data.json` provided)
+- Maps license/SKU IDs to names (if available)
+- Flags risky license hygiene (e.g. disabled users with licenses, inactive users, lack of MFA)
+- Generates detailed JSON and CSV reports
+- Easy to extend with custom audit rules
+
+**How to use:**  
+- Simple, step-by-step run instructions in `py-script-project/README.md`
+- No Python experience required; just install, prepare the data file, and run
+
+See `py-script-project/README.md` for configuration, input format, and report details.
+
+
+
