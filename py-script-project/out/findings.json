@@ -1,0 +1,77 @@
+[
+  {
+    "risk_type": "disabled_user_with_licenses",
+    "severity": "high",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "upn": "chris.contractor@example.com",
+    "display_name": "Chris Contractor",
+    "details": "User account is disabled but still has active license assignments.",
+    "evidence": {
+      "accountEnabled": false,
+      "licenses": [
+        "M365_E3",
+        "POWERBI_PRO"
+      ]
+    },
+    "recommended_action": "Remove unnecessary licenses or confirm the account should remain disabled and licensed."
+  },
+  {
+    "risk_type": "inactive_user_over_threshold",
+    "severity": "medium",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "upn": "chris.contractor@example.com",
+    "display_name": "Chris Contractor",
+    "details": "No sign-in recorded in the last 90 days.",
+    "evidence": {
+      "lastSignInDateTime": "2025-06-01T09:15:00Z",
+      "thresholdDateTime": "2025-10-18T01:01:49.519944+00:00",
+      "licenses": [
+        "M365_E3",
+        "POWERBI_PRO"
+      ]
+    },
+    "recommended_action": "Review account necessity; disable or remove licenses if the user is no longer active."
+  },
+  {
+    "risk_type": "inactive_user_over_threshold",
+    "severity": "medium",
+    "user_id": "44444444-4444-4444-4444-444444444444",
+    "upn": "inactive.ingrid@example.com",
+    "display_name": "Inactive Ingrid",
+    "details": "No sign-in recorded in the last 90 days.",
+    "evidence": {
+      "lastSignInDateTime": "2025-08-01T08:00:00Z",
+      "thresholdDateTime": "2025-10-18T01:01:49.519944+00:00",
+      "licenses": [
+        "M365_E3"
+      ]
+    },
+    "recommended_action": "Review account necessity; disable or remove licenses if the user is no longer active."
+  },
+  {
+    "risk_type": "licensed_user_without_signin_activity",
+    "severity": "low",
+    "user_id": "33333333-3333-3333-3333-333333333333",
+    "upn": "pat.pending@example.com",
+    "display_name": "Pat Pending",
+    "details": "User is licensed but has no sign-in activity field populated.",
+    "evidence": {
+      "licenses": [
+        "M365_E3"
+      ]
+    },
+    "recommended_action": "If sign-in activity is expected, investigate why it's missing and review license necessity."
+  },
+  {
+    "risk_type": "user_without_mfa",
+    "severity": "high",
+    "user_id": "22222222-2222-2222-2222-222222222222",
+    "upn": "chris.contractor@example.com",
+    "display_name": "Chris Contractor",
+    "details": "User appears to be missing MFA registration/enforcement.",
+    "evidence": {
+      "mfaEnabled": false
+    },
+    "recommended_action": "Require MFA for the user (policy-based enforcement preferred) and validate registration."
+  }
+]

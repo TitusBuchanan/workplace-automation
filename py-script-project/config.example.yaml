@@ -1,0 +1,14 @@
+input:
+  # Path to your JSON export. By default, `main.py` will use `sample_data.json`.
+  path: sample_data.json
+
+audit:
+  # Used only when last sign-in timestamps exist in your dataset.
+  inactivity_days: 90
+
+report:
+  out_dir: out
+  formats:
+    - json
+    - csv
+

@@ -1,0 +1,84 @@
+{
+  "generatedAt": "2026-01-16T00:00:00Z",
+  "source": "sample_dataset_edit_me",
+  "skus": [
+    {
+      "skuId": "M365_E3",
+      "skuPartNumber": "M365_E3",
+      "displayName": "Microsoft 365 E3"
+    },
+    {
+      "skuId": "M365_E5",
+      "skuPartNumber": "M365_E5",
+      "displayName": "Microsoft 365 E5"
+    },
+    {
+      "skuId": "POWERBI_PRO",
+      "skuPartNumber": "POWERBI_PRO",
+      "displayName": "Power BI Pro"
+    }
+  ],
+  "users": [
+    {
+      "id": "11111111-1111-1111-1111-111111111111",
+      "displayName": "Ava Admin",
+      "userPrincipalName": "ava.admin@example.com",
+      "accountEnabled": true,
+      "userType": "Member",
+      "department": "IT",
+      "assignedLicenses": [
+        "M365_E5"
+      ],
+      "lastSignInDateTime": "2026-01-10T13:05:00Z",
+      "mfaEnabled": true
+    },
+    {
+      "id": "22222222-2222-2222-2222-222222222222",
+      "displayName": "Chris Contractor",
+      "userPrincipalName": "chris.contractor@example.com",
+      "accountEnabled": false,
+      "userType": "Guest",
+      "department": "Vendors",
+      "assignedLicenses": [
+        "M365_E3",
+        "POWERBI_PRO"
+      ],
+      "lastSignInDateTime": "2025-06-01T09:15:00Z",
+      "mfaEnabled": false
+    },
+    {
+      "id": "33333333-3333-3333-3333-333333333333",
+      "displayName": "Pat Pending",
+      "userPrincipalName": "pat.pending@example.com",
+      "accountEnabled": true,
+      "userType": "Member",
+      "department": "Sales",
+      "assignedLicenses": [
+        "M365_E3"
+      ]
+    },
+    {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "displayName": "Inactive Ingrid",
+      "userPrincipalName": "inactive.ingrid@example.com",
+      "accountEnabled": true,
+      "userType": "Member",
+      "department": "Marketing",
+      "assignedLicenses": [
+        "M365_E3"
+      ],
+      "lastSignInDateTime": "2025-08-01T08:00:00Z"
+    },
+    {
+      "id": "55555555-5555-5555-5555-555555555555",
+      "displayName": "No License Nancy",
+      "userPrincipalName": "no.license.nancy@example.com",
+      "accountEnabled": true,
+      "userType": "Member",
+      "department": "Support",
+      "assignedLicenses": [],
+      "lastSignInDateTime": "2026-01-12T18:22:00Z"
+    }
+  ]
+}
+
