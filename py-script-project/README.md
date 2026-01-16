@@ -93,3 +93,84 @@ Reports written:
 ## Notes / safe scripting practices
 - This tool is designed for **read-only auditing**.
 - It validates input shape and fails with clear errors when required fields are missing.
+
+
+## Step-by-Step Guide: Using This Audit Tool
+
+Whether you're technical or new to auditing, follow these easy steps to complete your Microsoft 365 access & license check:
+
+1. **Download or Clone the Project**
+   - If you haven’t yet, click the green “Code” button on GitHub and select **Download ZIP** or, if you use Git, copy the URL and run:  
+     ```
+     git clone https://github.com/YOUR_ORG/py-script-project.git
+     ```
+   - Unzip or open the folder where you downloaded.
+
+2. **Open Your Terminal or Command Prompt**
+   - On Windows: Search for “Command Prompt” or “PowerShell” and open it.
+   - On Mac: Open the “Terminal” from Applications → Utilities.
+   - On Linux: Open your preferred terminal emulator.
+
+3. **Navigate to the Project Folder**
+   - Use the `cd` command:
+     ```
+     cd path/to/py-script-project
+     ```
+   - Replace `path/to/py-script-project` with the actual folder path.
+
+4. **Set Up Python (one time only)**
+   - These steps make sure you have all the required tools in a safe “virtual environment.”
+     ```
+     python3 -m venv .venv
+     ```
+     - (If `python3` doesn’t work, try just `python`)
+     - Then activate it:
+       - On Mac/Linux:
+         ```
+         source .venv/bin/activate
+         ```
+       - On Windows:
+         ```
+         .venv\Scripts\activate
+         ```
+
+5. **Install Required Libraries**
+   - Run:
+     ```
+     pip install -r requirements.txt
+     ```
+
+6. **Prepare Your Data File**
+   - Place your exported Microsoft 365 audit data (for example, `sample_data.json`) in the project folder.
+   - If you’re not sure how to export data from Microsoft 365 or Entra, see your admin guide or ask your IT team for a user export file.
+
+7. **Run the Audit**
+   - Run the main script with default settings:
+     ```
+     python main.py
+     ```
+   - If you want to specify your data file:
+     ```
+     python main.py --input my_export.json
+     ```
+   - You can also set where results will be saved:
+     ```
+     python main.py --input my_export.json --out-dir results/
+     ```
+
+8. **View Results**
+   - After the script finishes, check the `out/` folder (or your chosen directory).
+   - Open `findings.json` for a detailed report, or `findings.csv` to view in Excel or Google Sheets.
+   - Look for the console summary to quickly see any major findings.
+
+9. **Share or Take Action**
+   - You can send the CSV to others, include the summary in a report, or follow your organization’s next steps based on the findings.
+
+---
+
+**Need help?**
+- If you’re stuck, double-check each step above.
+- For technical help, you can open an issue on GitHub 
+
+*You don’t need to be a developer to use this tool! Just follow these steps and you’ll be able to audit user access and licenses safely and efficiently.*
+
